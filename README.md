@@ -1,2 +1,2 @@
 # OA
-OA SpringMVC 4 + Herbinate 4
+OA SpringMVC 4 + Hibernate 4
