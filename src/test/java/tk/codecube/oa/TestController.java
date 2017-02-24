@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TestController {
 
 	@Autowired
-	private TestService ts;
+	private TestService testService;
 	
 	public TestController() {
 		System.out.println("TestController.TestController()");
@@ -20,14 +20,14 @@ public class TestController {
 	@RequestMapping("/save")
 	public void save(String name){
 		TestModel tm = new TestModel();
-		tm.setName(name);
+		tm.setUserName(name);
 		tm.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-		ts.saveTestInfo(tm);
+		testService.saveTestInfo(tm);
 	}
 	
 	@RequestMapping("/get")
 	public void get(String id){
-		TestModel tm = ts.getModel(id);
+		TestModel tm = testService.getModel(id);
 		System.out.println(tm.toString());
 	}
 }

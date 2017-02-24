@@ -1,36 +1,43 @@
 package tk.codecube.oa;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import tk.codecube.base.BaseModel;
 
-/**
- * Hibernate自动扫包测试类
- * @author bpqqo
- *
- */
-@Entity
-@Table(name = "TEST_MODEL")
 public class TestModel extends BaseModel {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4632165885124880786L;
-	
-	private String name;
+	private static final long serialVersionUID = 1601692117243826436L;
 
-	@Column(name = "name")
-	public String getName() {
-		return name;
+	private String id;
+	
+	private String userName;
+	
+	private String passWord;
+
+	public String getId() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getUserName() {
+		return userName;
 	}
-	
-	
 
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassWord() {
+		return passWord;
+	}
+
+	public void setPassWord(String passWord) {
+		this.passWord = passWord;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	
 }

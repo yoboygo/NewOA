@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import tk.codecube.base.BaseDao;
 
 @Repository
-public class TestDao extends BaseDao<TestModel>{
+public class TestDao extends BaseDao<TestModel> implements ITestDao{
 
 }

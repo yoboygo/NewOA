@@ -3,16 +3,24 @@ package tk.codecube.base;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import org.hibernate.SessionFactory;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 
-
-public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
+/**
+ * MyBits测试基类
+ * @author songjl
+ *
+ * @param <T>
+ */
+@SuppressWarnings("unchecked")
+public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	
 	private Class<T> clazz;
 	
-	@SuppressWarnings("unchecked")
+	@Autowired
+	private SqlSessionFactory sqlSessionFactory;
+	
 	public BaseDao() {
 		ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
 		this.clazz = (Class<T>) pt.getClass();
@@ -22,9 +30,9 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param entity
 	 * @return 返回主键
 	 */
-	public String save(T entity){
-		super.getHibernateTemplate().save(entity);
-		return entity.getId();
+	public void save(T entity){
+		getSession().getMapper(IBaseDao.class).save(entity);
+		entity.getId();
 	}
 	
 	/**
@@ -32,9 +40,9 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param entity
 	 * @return
 	 */
-	public String saveOrUpdate(T entity){
-		super.getHibernateTemplate().saveOrUpdate(entity);
-		return entity.getId();
+	public void saveOrUpdate(T entity){
+		getSession().getMapper(IBaseDao.class).saveOrUpdate(entity);
+		entity.getId();
 	}
 	
 	/**
@@ -42,7 +50,7 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param entity
 	 */
 	public void delete(T entity){
-		super.getHibernateTemplate().delete(entity);
+		getSession().getMapper(IBaseDao.class).delete(entity);
 	}
 	
 	/**
@@ -50,7 +58,7 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param entity
 	 */
 	public void update(T entity){
-		super.getHibernateTemplate().update(entity);
+		getSession().getMapper(IBaseDao.class).update(entity);
 	}
 
 	/**
@@ -60,7 +68,7 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 */
 	public T get(String id)
 	{
-		return super.getHibernateTemplate().get(clazz, id);
+		return (T) getSession().getMapper(IBaseDao.class).get(id);
 	}
 	
 	/**
@@ -69,9 +77,8 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param values
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public List<T> findByHql(String queryString,Object... values){
-		return (List<T>) super.getHibernateTemplate().find(queryString, values);
+	public List<T> findByHql(String queryString){
+		return (List<T>) getSession().getMapper(IBaseDao.class).findByHql(queryString);
 	}
 	
 
@@ -80,18 +87,21 @@ public class BaseDao<T extends BaseModel> extends HibernateDaoSupport{
 	 * @param sql
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public List<T> findBySql(String sql){
-		return (List<T>) super.getSessionFactory().getCurrentSession().createSQLQuery(sql);
+		return (List<T>) getSession().getMapper(IBaseDao.class).findBySql(sql);
 	}
 	
 	/**
 	 * 将Hibernate的SessionFactory注入进来
 	 * @param sessionFactory
 	 */
-	@Autowired
-	public void setSessonFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
+	public void setSessionFactoryBySpring(SqlSessionFactory sqlSessionFactory){
+		System.out.println("BaseDao.setSessionFactoryBySpring() 注入 Hibernate SessionFactory.."+sqlSessionFactory);
+		this.sqlSessionFactory = sqlSessionFactory;
+	}
+	
+	protected SqlSession getSession(){
+		return this.sqlSessionFactory.openSession();
 	}
 	
 }
