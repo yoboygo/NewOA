@@ -23,7 +23,7 @@ public class BaseModel implements Serializable{
 	@Id
 	@GeneratedValue(generator="system-uuid")
 	@GenericGenerator(name="system-uuid",strategy="uuid")
-	@Column(name="ID_",length=32,unique=true,nullable=false,updatable=false)
+	@Column(name="id_",length=32,unique=true,nullable=false,updatable=false)
 	public String getId() {
 		return id;
 	}

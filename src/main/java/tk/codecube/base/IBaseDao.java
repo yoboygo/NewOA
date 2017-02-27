@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IBaseDao<T> {
 
-	void save(T entity);
+	String save(T entity);
 	
 	void saveOrUpdate(T entity);
 	

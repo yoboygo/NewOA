@@ -3,8 +3,8 @@ package tk.codecube.base;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -19,7 +19,7 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	private Class<T> clazz;
 	
 	@Autowired
-	private SqlSessionFactory sqlSessionFactory;
+	private SessionFactory sessionFactory;
 	
 	public BaseDao() {
 		ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -30,9 +30,9 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 * @param entity
 	 * @return 返回主键
 	 */
-	public void save(T entity){
-		getSession().getMapper(IBaseDao.class).save(entity);
-		entity.getId();
+	public String save(T entity){
+		getSession().save(entity);
+		return entity.getId();
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 * @return
 	 */
 	public void saveOrUpdate(T entity){
-		getSession().getMapper(IBaseDao.class).saveOrUpdate(entity);
+		getSession().saveOrUpdate(entity);
 		entity.getId();
 	}
 	
@@ -50,7 +50,7 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 * @param entity
 	 */
 	public void delete(T entity){
-		getSession().getMapper(IBaseDao.class).delete(entity);
+		getSession().delete(entity);
 	}
 	
 	/**
@@ -58,7 +58,7 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 * @param entity
 	 */
 	public void update(T entity){
-		getSession().getMapper(IBaseDao.class).update(entity);
+		getSession().update(entity);
 	}
 
 	/**
@@ -68,17 +68,17 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 */
 	public T get(String id)
 	{
-		return (T) getSession().getMapper(IBaseDao.class).get(id);
+		return (T) getSession().get(clazz,id);
 	}
 	
 	/**
 	 * 根据HQL查询
-	 * @param queryString
+	 * @param hql
 	 * @param values
 	 * @return
 	 */
-	public List<T> findByHql(String queryString){
-		return (List<T>) getSession().getMapper(IBaseDao.class).findByHql(queryString);
+	public List<T> findByHql(String hql){
+		return (List<T>) getSession().createQuery(hql);
 	}
 	
 
@@ -88,20 +88,13 @@ public class BaseDao<T extends BaseModel> implements IBaseDao<T>{
 	 * @return
 	 */
 	public List<T> findBySql(String sql){
-		return (List<T>) getSession().getMapper(IBaseDao.class).findBySql(sql);
+		return (List<T>) getSession().createNativeQuery(sql, clazz);
 	}
 	
-	/**
-	 * 将Hibernate的SessionFactory注入进来
-	 * @param sessionFactory
-	 */
-	public void setSessionFactoryBySpring(SqlSessionFactory sqlSessionFactory){
-		System.out.println("BaseDao.setSessionFactoryBySpring() 注入 Hibernate SessionFactory.."+sqlSessionFactory);
-		this.sqlSessionFactory = sqlSessionFactory;
-	}
-	
-	protected SqlSession getSession(){
-		return this.sqlSessionFactory.openSession();
+	protected Session getSession(){
+		
+//		return this.sessionFactory.openSession();
+		return this.sessionFactory.getCurrentSession();
 	}
 	
 }

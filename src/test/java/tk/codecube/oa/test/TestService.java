@@ -1,11 +1,13 @@
-package tk.codecube.oa;
+package tk.codecube.oa.test;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+import tk.codecube.oa.sys.TestModel;
+
+@Service("testService")
 public class TestService {
 
 	@Autowired
